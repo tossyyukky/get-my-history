@@ -60,16 +60,21 @@ func (c *Client) Summarize(ctx context.Context, digest domain.WeeklyDigest) (str
 	}
 
 	var data struct {
-		OutputText string `json:"output_text"`
+		OutputText string               `json:"output_text"`
+		Output     []responseOutputItem `json:"output"`
 	}
 	if err := json.NewDecoder(resp.Body).Decode(&data); err != nil {
 		return "", fmt.Errorf("decode openai response: %w", err)
 	}
-	if strings.TrimSpace(data.OutputText) == "" {
+	text := strings.TrimSpace(data.OutputText)
+	if text == "" {
+		text = strings.TrimSpace(extractOutputText(data.Output))
+	}
+	if text == "" {
 		return "", fmt.Errorf("openai response did not include output_text")
 	}
 
-	return strings.TrimSpace(data.OutputText), nil
+	return text, nil
 }
 
 func buildPrompt(digest domain.WeeklyDigest) string {
@@ -93,4 +98,26 @@ func buildPrompt(digest domain.WeeklyDigest) string {
 	}
 
 	return b.String()
+}
+
+func extractOutputText(items []responseOutputItem) string {
+	var parts []string
+	for _, item := range items {
+		for _, content := range item.Content {
+			if content.Type == "output_text" && strings.TrimSpace(content.Text) != "" {
+				parts = append(parts, strings.TrimSpace(content.Text))
+			}
+		}
+	}
+
+	return strings.Join(parts, "\n")
+}
+
+type responseOutputItem struct {
+	Content []responseContentItem `json:"content"`
+}
+
+type responseContentItem struct {
+	Type string `json:"type"`
+	Text string `json:"text"`
 }
