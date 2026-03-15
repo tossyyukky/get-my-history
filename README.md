@@ -26,6 +26,14 @@ Weekly Discord digest system implemented in Go.
 
 ## Local run
 
+If you use `direnv`, place your secrets in `.env`, keep `.envrc` as-is, and run:
+
+```bash
+direnv allow
+```
+
+Then run the app normally:
+
 ```bash
 go run ./cmd/weekly-digest
 ```
