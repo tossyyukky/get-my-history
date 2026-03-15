@@ -12,6 +12,7 @@ Weekly Discord digest system implemented in Go.
 ## Schedule
 
 - every Saturday at 09:00 JST via GitHub Actions
+- pull requests and pushes to `master` run `go test ./...`
 
 ## Required secrets
 
