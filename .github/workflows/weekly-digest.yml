@@ -1,0 +1,29 @@
+name: Weekly Discord Digest
+
+on:
+  schedule:
+    - cron: "0 0 * * 6"
+  workflow_dispatch:
+
+jobs:
+  weekly-digest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Run weekly digest
+        env:
+          DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+          DISCORD_SOURCE_CHANNEL_ID: ${{ secrets.DISCORD_SOURCE_CHANNEL_ID }}
+          DISCORD_NOTIFICATION_CHANNEL_ID: ${{ secrets.DISCORD_NOTIFICATION_CHANNEL_ID }}
+          DISCORD_MENTION_USER_ID: ${{ secrets.DISCORD_MENTION_USER_ID }}
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_PARENT_PAGE_ID: ${{ secrets.NOTION_PARENT_PAGE_ID }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_MODEL: ${{ secrets.OPENAI_MODEL }}
+        run: go run ./cmd/weekly-digest
+

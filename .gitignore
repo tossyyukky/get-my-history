@@ -1,0 +1,14 @@
+# OS
+.DS_Store
+
+# Logs
+*.log
+
+# Environment
+.env
+.env.*
+
+# Build output
+dist/
+build/
+coverage/
