@@ -1,17 +1,25 @@
 name: Weekly Discord Digest
 
 on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+    paths:
+      - ".github/workflows/weekly-digest.yml"
   schedule:
     - cron: "0 0 * * 6"
-  workflow_dispatch:
 
 jobs:
   weekly-digest:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
 
-      - uses: actions/setup-go@v5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
 
@@ -26,4 +34,3 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_MODEL: ${{ secrets.OPENAI_MODEL }}
         run: go run ./cmd/weekly-digest
-
