@@ -17,12 +17,20 @@ type DigestWindow struct {
 }
 
 type WeeklyDigest struct {
-	Window    DigestWindow
-	Messages  []Message
-	Summary   string
-	NotionURL string
+	Window     DigestWindow
+	Messages   []Message
+	References []ReferenceContent
+	Summary    string
+	NotionURL  string
 }
 
 func (w WeeklyDigest) MessageCount() int {
 	return len(w.Messages)
+}
+
+type ReferenceContent struct {
+	SourceMessageID string
+	URL             string
+	Title           string
+	Excerpt         string
 }

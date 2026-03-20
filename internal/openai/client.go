@@ -97,6 +97,17 @@ func buildPrompt(digest domain.WeeklyDigest) string {
 		fmt.Fprintf(&b, "[%s] %s: %s\n", msg.Timestamp.In(jst).Format("2006-01-02 15:04"), msg.Author, msg.Content)
 	}
 
+	if len(digest.References) > 0 {
+		b.WriteString("\n参照した公開URLの内容:\n")
+		for _, ref := range digest.References {
+			if ref.Title != "" {
+				fmt.Fprintf(&b, "- %s\n", ref.Title)
+			}
+			fmt.Fprintf(&b, "  URL: %s\n", ref.URL)
+			fmt.Fprintf(&b, "  抜粋: %s\n", ref.Excerpt)
+		}
+	}
+
 	return b.String()
 }
 

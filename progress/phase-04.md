@@ -10,3 +10,4 @@ Status: completed
 ## Notes
 
 - Uses the OpenAI Responses API for Japanese weekly summaries.
+- Public URL excerpts are added to the model input when fetchable.

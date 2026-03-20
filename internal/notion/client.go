@@ -117,6 +117,20 @@ func buildChildren(digest domain.WeeklyDigest) []map[string]any {
 		children = append(children, bulletedListItemBlock(truncate(line, 1800)))
 	}
 
+	if len(digest.References) > 0 {
+		children = append(children, headingBlock("Referenced URLs"))
+		for _, ref := range digest.References {
+			line := ref.URL
+			if ref.Title != "" {
+				line = ref.Title + "\n" + line
+			}
+			if ref.Excerpt != "" {
+				line += "\n" + ref.Excerpt
+			}
+			children = append(children, bulletedListItemBlock(truncate(line, 1800)))
+		}
+	}
+
 	return children
 }
 

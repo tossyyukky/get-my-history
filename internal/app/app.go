@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/tossy-yukky/codex-sample-project/internal/config"
+	"github.com/tossy-yukky/codex-sample-project/internal/content"
 	"github.com/tossy-yukky/codex-sample-project/internal/discord"
 	"github.com/tossy-yukky/codex-sample-project/internal/domain"
 	"github.com/tossy-yukky/codex-sample-project/internal/notion"
@@ -33,6 +34,7 @@ func Run(ctx context.Context, cfg config.Config) error {
 	discordClient := discord.NewClient(cfg)
 	notionClient := notion.NewClient(cfg)
 	openAIClient := openai.NewClient(cfg)
+	contentFetcher := content.NewFetcher()
 
 	messages, err := discordClient.FetchMessages(ctx, cfg.DiscordSourceChannelID, window)
 	if err != nil {
@@ -40,8 +42,9 @@ func Run(ctx context.Context, cfg config.Config) error {
 	}
 
 	digest := domain.WeeklyDigest{
-		Window:   window,
-		Messages: messages,
+		Window:     window,
+		Messages:   messages,
+		References: contentFetcher.FetchReferences(ctx, messages),
 	}
 
 	summary, err := openAIClient.Summarize(ctx, digest)
