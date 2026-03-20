@@ -70,17 +70,10 @@ func Run(ctx context.Context, cfg config.Config) error {
 }
 
 func CurrentWeeklyWindow(now time.Time) domain.DigestWindow {
-	jst := time.FixedZone("JST", 9*60*60)
-	localNow := now.In(jst)
-	end := time.Date(localNow.Year(), localNow.Month(), localNow.Day(), 9, 0, 0, 0, jst)
-
-	for end.Weekday() != time.Saturday || localNow.Before(end) {
-		end = end.AddDate(0, 0, -1)
-	}
-
+	end := now.UTC()
 	start := end.AddDate(0, 0, -7)
 	return domain.DigestWindow{
-		Start: start.UTC(),
-		End:   end.UTC(),
+		Start: start,
+		End:   end,
 	}
 }

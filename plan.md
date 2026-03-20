@@ -5,7 +5,7 @@
 Build a private GitHub Actions based system in Go that:
 
 - reads messages posted in Discord channel `1007659965705625650`
-- aggregates the previous 7 days of posts every Saturday at 09:00 JST
+- aggregates the previous 7 days of posts at each execution time
 - creates one weekly Notion page
 - generates an AI summary using OpenAI API
 - posts the Notion link and summary to Discord channel `1482323925907144795`
@@ -40,7 +40,7 @@ Build a private GitHub Actions based system in Go that:
 ### Phase 2: Discord ingestion
 
 - implement Discord API client for reading channel history
-- filter messages to the last 7 days using JST aware windowing
+- filter messages to the last 7 days relative to the execution time
 - normalize messages into internal digest items
 
 ### Phase 3: Notion publishing
@@ -76,4 +76,3 @@ Build a private GitHub Actions based system in Go that:
 - Discord mention user ID for `@tossy_yukky`
 - Notion parent page or database target ID
 - Discord bot installation and permissions in the server
-

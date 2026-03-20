@@ -13,6 +13,7 @@ Weekly Discord digest system implemented in Go.
 
 - every Saturday at 09:00 JST via GitHub Actions
 - pull requests and pushes to `master` run `go test ./...`
+- each run summarizes the previous 7 days counted back from the execution time
 
 ## Required secrets
 
@@ -47,6 +48,7 @@ Use `.env.example` as the reference for required environment variables.
 - the Discord bot needs `VIEW_CHANNEL`, `READ_MESSAGE_HISTORY`, and `SEND_MESSAGES`
 - the Notion parent page must be shared with the integration
 - GitHub Actions cron `0 0 * * 6` corresponds to Saturday 09:00 JST
+- message collection window is always `execution time - 7 days` to `execution time`
 
 ## Implementation scope
 

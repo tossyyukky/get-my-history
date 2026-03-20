@@ -13,5 +13,5 @@ Status: completed
 ## Notes
 
 - Mention delivery will require a Discord user ID, not just a display handle.
-- `CurrentWeeklyWindow` uses Saturday 09:00 JST as the digest cutoff.
+- `CurrentWeeklyWindow` uses the execution time as the digest cutoff and looks back 7 days.
 - Go module, CLI, config, and project documentation are in place.
