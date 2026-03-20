@@ -117,6 +117,39 @@ func buildChildren(digest domain.WeeklyDigest) []map[string]any {
 		children = append(children, bulletedListItemBlock(truncate(line, 1800)))
 	}
 
+	missingMessages := digest.MessagesWithMissingContent()
+	if len(missingMessages) > 0 {
+		children = append(children, headingBlock("取得失敗"))
+		for _, msg := range missingMessages {
+			line := fmt.Sprintf(
+				"[%s] %s: 投稿本文を取得できませんでした\n%s",
+				msg.Timestamp.In(jst).Format("2006-01-02 15:04"),
+				msg.Author,
+				msg.URL,
+			)
+			children = append(children, bulletedListItemBlock(truncate(line, 1800)))
+		}
+	}
+
+	if len(digest.References) > 0 {
+		children = append(children, headingBlock("Referenced URLs"))
+		for _, ref := range digest.References {
+			line := ref.URL
+			if ref.Failed() {
+				line += "\nFetch failed: " + ref.Error
+				children = append(children, bulletedListItemBlock(truncate(line, 1800)))
+				continue
+			}
+			if ref.Title != "" {
+				line = ref.Title + "\n" + line
+			}
+			if ref.Excerpt != "" {
+				line += "\n" + ref.Excerpt
+			}
+			children = append(children, bulletedListItemBlock(truncate(line, 1800)))
+		}
+	}
+
 	return children
 }
 

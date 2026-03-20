@@ -5,6 +5,7 @@ Weekly Discord digest system implemented in Go.
 ## What it does
 
 - reads the previous 7 days of messages from a Discord channel
+- fetches public URL contents linked in Discord messages when available
 - creates a weekly Notion page
 - generates an AI summary with OpenAI
 - posts the Notion link and summary to a Discord notification channel
@@ -49,6 +50,8 @@ Use `.env.example` as the reference for required environment variables.
 - the Notion parent page must be shared with the integration
 - GitHub Actions cron `0 0 * * 6` corresponds to Saturday 09:00 JST
 - message collection window is always `execution time - 7 days` to `execution time`
+- public `http/https` URLs in messages are fetched on a best-effort basis and added to the AI context
+- when a public URL cannot be fetched, the digest records that the fetch failed instead of silently dropping it
 
 ## Implementation scope
 

@@ -12,3 +12,4 @@ Status: completed
 
 - Uses Discord REST API with backward pagination.
 - Includes attachment URLs in the digest content.
+- Public URLs in message content can be extracted for downstream enrichment.
