@@ -52,6 +52,34 @@ func TestFetchReferencesHTML(t *testing.T) {
 	}
 }
 
+func TestFetchReferencesUsesOpenGraphMetadata(t *testing.T) {
+	fetcher := NewFetcherWithClient(&http.Client{
+		Transport: roundTripFunc(func(req *http.Request) (*http.Response, error) {
+			return &http.Response{
+				StatusCode: http.StatusOK,
+				Header: http.Header{
+					"Content-Type": []string{"text/html; charset=utf-8"},
+				},
+				Body: io.NopCloser(strings.NewReader(`<html><head><meta property="og:title" content="X Post Title"><meta property="og:description" content="Posted via metadata excerpt."><title>Fallback Title</title></head><body><main>Fallback body text</main></body></html>`)),
+			}, nil
+		}),
+	})
+
+	refs := fetcher.FetchReferences(context.Background(), []domain.Message{
+		{ID: "1", Content: "check https://x.com/example/status/1"},
+	})
+
+	if len(refs) != 1 {
+		t.Fatalf("expected 1 reference, got %d", len(refs))
+	}
+	if refs[0].Title != "X Post Title" {
+		t.Fatalf("unexpected title: %q", refs[0].Title)
+	}
+	if refs[0].Excerpt != "Posted via metadata excerpt." {
+		t.Fatalf("unexpected excerpt: %q", refs[0].Excerpt)
+	}
+}
+
 func TestFetchReferencesRecordsFailure(t *testing.T) {
 	fetcher := NewFetcherWithClient(&http.Client{
 		Transport: roundTripFunc(func(req *http.Request) (*http.Response, error) {

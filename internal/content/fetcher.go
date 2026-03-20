@@ -130,7 +130,15 @@ func (f *Fetcher) fetchReference(ctx context.Context, messageID, rawURL string) 
 
 func summarizeDocument(body []byte) (string, string) {
 	text := string(body)
-	title := extractTitle(text)
+	title, excerpt := extractMetadata(text)
+	if title != "" || excerpt != "" {
+		if title == "" {
+			title = firstLine(excerpt)
+		}
+		return truncate(title, 160), truncate(excerpt, 1200)
+	}
+
+	title = extractTitle(text)
 	text = stripTagBlock(text, "script")
 	text = stripTagBlock(text, "style")
 	text = stripTags(text)
@@ -142,6 +150,35 @@ func summarizeDocument(body []byte) (string, string) {
 	}
 
 	return truncate(title, 160), truncate(text, 1200)
+}
+
+func extractMetadata(body string) (string, string) {
+	title := firstNonEmpty(
+		extractMetaContent(body, "property", "og:title"),
+		extractMetaContent(body, "name", "twitter:title"),
+	)
+	excerpt := firstNonEmpty(
+		extractMetaContent(body, "property", "og:description"),
+		extractMetaContent(body, "name", "twitter:description"),
+		extractMetaContent(body, "name", "description"),
+	)
+
+	return normalizeWhitespace(html.UnescapeString(title)), normalizeWhitespace(html.UnescapeString(excerpt))
+}
+
+func extractMetaContent(body, attr, value string) string {
+	patterns := []string{
+		`(?is)<meta[^>]*` + attr + `=["']` + regexp.QuoteMeta(value) + `["'][^>]*content=["'](.*?)["'][^>]*>`,
+		`(?is)<meta[^>]*content=["'](.*?)["'][^>]*` + attr + `=["']` + regexp.QuoteMeta(value) + `["'][^>]*>`,
+	}
+	for _, pattern := range patterns {
+		re := regexp.MustCompile(pattern)
+		m := re.FindStringSubmatch(body)
+		if len(m) >= 2 {
+			return stripTags(m[1])
+		}
+	}
+	return ""
 }
 
 func extractTitle(body string) string {
@@ -172,6 +209,15 @@ func firstLine(value string) string {
 		return ""
 	}
 	return strings.SplitN(value, "\n", 2)[0]
+}
+
+func firstNonEmpty(values ...string) string {
+	for _, value := range values {
+		if strings.TrimSpace(value) != "" {
+			return value
+		}
+	}
+	return ""
 }
 
 func truncate(value string, limit int) string {
