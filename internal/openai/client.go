@@ -97,6 +97,14 @@ func buildPrompt(digest domain.WeeklyDigest) string {
 		fmt.Fprintf(&b, "[%s] %s: %s\n", msg.Timestamp.In(jst).Format("2006-01-02 15:04"), msg.Author, msg.Content)
 	}
 
+	missingMessages := digest.MessagesWithMissingContent()
+	if len(missingMessages) > 0 {
+		b.WriteString("\n内容取得失敗の投稿:\n")
+		for _, msg := range missingMessages {
+			fmt.Fprintf(&b, "- [%s] %s の投稿は本文が取得できませんでした\n", msg.Timestamp.In(jst).Format("2006-01-02 15:04"), msg.Author)
+		}
+	}
+
 	if len(digest.References) > 0 {
 		b.WriteString("\n参照した公開URLの内容:\n")
 		for _, ref := range digest.References {
