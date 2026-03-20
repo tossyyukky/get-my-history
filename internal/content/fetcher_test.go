@@ -47,6 +47,37 @@ func TestFetchReferencesHTML(t *testing.T) {
 	if refs[0].Excerpt == "" {
 		t.Fatal("expected non-empty excerpt")
 	}
+	if refs[0].Failed() {
+		t.Fatalf("expected success, got failure: %q", refs[0].Error)
+	}
+}
+
+func TestFetchReferencesRecordsFailure(t *testing.T) {
+	fetcher := NewFetcherWithClient(&http.Client{
+		Transport: roundTripFunc(func(req *http.Request) (*http.Response, error) {
+			return &http.Response{
+				StatusCode: http.StatusForbidden,
+				Header: http.Header{
+					"Content-Type": []string{"text/plain; charset=utf-8"},
+				},
+				Body: io.NopCloser(strings.NewReader("forbidden")),
+			}, nil
+		}),
+	})
+
+	refs := fetcher.FetchReferences(context.Background(), []domain.Message{
+		{ID: "1", Content: "check https://example.com/private"},
+	})
+
+	if len(refs) != 1 {
+		t.Fatalf("expected 1 reference, got %d", len(refs))
+	}
+	if !refs[0].Failed() {
+		t.Fatal("expected failed reference")
+	}
+	if refs[0].Error == "" {
+		t.Fatal("expected error message")
+	}
 }
 
 type roundTripFunc func(*http.Request) (*http.Response, error)

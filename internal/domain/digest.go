@@ -33,4 +33,9 @@ type ReferenceContent struct {
 	URL             string
 	Title           string
 	Excerpt         string
+	Error           string
+}
+
+func (r ReferenceContent) Failed() bool {
+	return r.Error != ""
 }

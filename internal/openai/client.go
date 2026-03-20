@@ -100,6 +100,11 @@ func buildPrompt(digest domain.WeeklyDigest) string {
 	if len(digest.References) > 0 {
 		b.WriteString("\n参照した公開URLの内容:\n")
 		for _, ref := range digest.References {
+			if ref.Failed() {
+				fmt.Fprintf(&b, "- URL: %s\n", ref.URL)
+				fmt.Fprintf(&b, "  取得失敗: %s\n", ref.Error)
+				continue
+			}
 			if ref.Title != "" {
 				fmt.Fprintf(&b, "- %s\n", ref.Title)
 			}

@@ -47,6 +47,11 @@ func (f *Fetcher) FetchReferences(ctx context.Context, messages []domain.Message
 
 			ref, err := f.fetchReference(ctx, msg.ID, rawURL)
 			if err != nil {
+				refs = append(refs, domain.ReferenceContent{
+					SourceMessageID: msg.ID,
+					URL:             rawURL,
+					Error:           truncate(err.Error(), 240),
+				})
 				continue
 			}
 			refs = append(refs, ref)

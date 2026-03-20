@@ -121,6 +121,11 @@ func buildChildren(digest domain.WeeklyDigest) []map[string]any {
 		children = append(children, headingBlock("Referenced URLs"))
 		for _, ref := range digest.References {
 			line := ref.URL
+			if ref.Failed() {
+				line += "\nFetch failed: " + ref.Error
+				children = append(children, bulletedListItemBlock(truncate(line, 1800)))
+				continue
+			}
 			if ref.Title != "" {
 				line = ref.Title + "\n" + line
 			}

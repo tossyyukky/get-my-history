@@ -51,6 +51,7 @@ Use `.env.example` as the reference for required environment variables.
 - GitHub Actions cron `0 0 * * 6` corresponds to Saturday 09:00 JST
 - message collection window is always `execution time - 7 days` to `execution time`
 - public `http/https` URLs in messages are fetched on a best-effort basis and added to the AI context
+- when a public URL cannot be fetched, the digest records that the fetch failed instead of silently dropping it
 
 ## Implementation scope
 
